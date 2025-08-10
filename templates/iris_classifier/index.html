@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Iris Flower Classifier{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-2 py-2">
+    <div class="max-w-4xl mx-auto bg-white dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            
+            <!-- Form Section -->
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">Predict Iris Flower Species</h2>
+                <form id="irisForm" class="space-y-4">
+                    <div>
+                        <label for="sepal_length" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sepal Length (cm)</label>
+                        <input type="number" step="0.1" name="sepal_length" id="sepal_length" required class="mt-1 block w-full p-3 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., 5.1">
+                    </div>
+                    <div>
+                        <label for="sepal_width" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sepal Width (cm)</label>
+                        <input type="number" step="0.1" name="sepal_width" id="sepal_width" required class="mt-1 block w-full p-3 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., 3.5">
+                    </div>
+                    <div>
+                        <label for="petal_length" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Petal Length (cm)</label>
+                        <input type="number" step="0.1" name="petal_length" id="petal_length" required class="mt-1 block w-full p-3 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., 1.4">
+                    </div>
+                    <div>
+                        <label for="petal_width" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Petal Width (cm)</label>
+                        <input type="number" step="0.1" name="petal_width" id="petal_width" required class="mt-1 block w-full p-3 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., 0.2">
+                    </div>
+                    <div class="text-center pt-4">
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg">Predict Species</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Image and Result Section -->
+            <div class="text-center">
+                <div id="image-container" class="relative h-80 w-full bg-gray-100 dark:bg-gray-900/80 rounded-xl shadow-inner border border-gray-200 dark:border-gray-700 flex items-center justify-center overflow-hidden hidden">
+                    <img id="img-setosa" src="{% static 'assets/img/setosa.jpeg' %}" alt="Iris Setosa" class="hidden-img h-full w-full object-cover">
+                    <img id="img-versicolor" src="{% static 'assets/img/versicolor.jpeg' %}" alt="Iris Versicolor" class="hidden-img h-full w-full object-cover">
+                    <img id="img-virginica" src="{% static 'assets/img/virginica.jpeg' %}" alt="Iris Virginica" class="hidden-img h-full w-full object-cover">
+                </div>
+                <div id="prediction-output" class="hidden mt-4 p-4">
+                    <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-300">Predicted Species:</h3>
+                    <p id="predictionResult" class="text-3xl font-bold text-indigo-600 dark:text-indigo-400"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .active-img {
+        display: block;
+        opacity: 1;
+        transition: opacity 0.5s ease-in-out;
+    }
+    .hidden-img {
+        display: none;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('irisForm');
+    const predictionOutput = document.getElementById('prediction-output');
+    const predictionResult = document.getElementById('predictionResult');
+    const imageContainer = document.getElementById('image-container');
+    const images = {
+        'Iris-setosa': document.getElementById('img-setosa'),
+        'Iris-versicolor': document.getElementById('img-versicolor'),
+        'Iris-virginica': document.getElementById('img-virginica')
+    };
+
+    function showImage(species) {
+        Object.values(images).forEach(img => {
+            img.classList.remove('active-img');
+            img.classList.add('hidden-img');
+        });
+        const targetImg = images[species];
+        if (targetImg) {
+            imageContainer.classList.remove('hidden');
+            targetImg.classList.remove('hidden-img');
+            targetImg.classList.add('active-img');
+        }
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        predictionResult.textContent = 'Predicting...';
+        predictionOutput.classList.remove('hidden');
+
+        try {
+            const response = await fetch('{% url "tasks:iris_classifier" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            predictionResult.textContent = result.prediction;
+            showImage(result.prediction);
+
+        } catch (error) {
+            console.error('Prediction error:', error);
+            predictionResult.textContent = 'Error';
+            imageContainer.classList.add('hidden');
+        }
+    });
+});
+</script>
+{% endblock %}
