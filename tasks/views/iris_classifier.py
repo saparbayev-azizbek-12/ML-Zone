@@ -1,22 +1,11 @@
-import os
 import json
-import joblib
-import numpy as np
-from django.conf import settings
-from django.http import JsonResponse
 from django.shortcuts import render
+from django.http import JsonResponse
+from tasks.services.iris_classifier import predict
 
-# Correct path to the model file
-model_path = os.path.join(settings.BASE_DIR, 'models', 'iris_classifier', 'iris_dataset_classifier.joblib')
-try:
-    model = joblib.load(model_path)
-except FileNotFoundError:
-    model = None
 
 def index(request):
     if request.method == 'POST':
-        if model is None:
-            return JsonResponse({'error': 'Model not found.'}, status=500)
 
         try:
             data = json.loads(request.body)
@@ -32,14 +21,13 @@ def index(request):
                 1: 'Iris-versicolor',
                 2: 'Iris-virginica'
             }
-            input_data = np.array([features])
-            print(input_data)
             
-            prediction = model.predict(input_data)
-            print(prediction)
-            species = flower_names[prediction[0]]
-            
-            return JsonResponse({'prediction': species})
+            pred = predict(features)
+            if pred['status']:
+                species = flower_names[pred['data']]
+                return JsonResponse({'prediction': species})
+            else:
+                return JsonResponse({'error': "Something went wrong with the prediction service!"})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
