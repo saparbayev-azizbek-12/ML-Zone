@@ -1,6 +1,6 @@
 import requests
 
-FAST_API_URL = "http://127.0.0.1:8000/"
+FAST_API_URL = "https://iris-api-7agz.onrender.com/"
 
 def predict(arr):
     payload = {"array": arr}
