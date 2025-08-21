@@ -8,6 +8,7 @@ from PIL import Image
 from django.conf import settings
 from django.shortcuts import render
 from django.http import JsonResponse
+from tasks.services.digit_recognition import predict
 
 model_path = os.path.join(settings.BASE_DIR, 'models', 'digit_recognition', 'digit_clf.joblib')
 try:
@@ -27,18 +28,17 @@ def index(request):
             format, imgstr = image_data.split(';base64,')
             image_bytes = base64.b64decode(imgstr)
             
-            image = Image.open(io.BytesIO(image_bytes))
-            image = image.convert('L').resize((28, 28))
-            
-            image_np = np.array(image)
-            image_np = image_np / 255.0
-            
-            image_reshaped = image_np.reshape(1, -1)
-            
-            prediction = model.predict(image_reshaped)
-            digit = int(prediction)
-            
-            return JsonResponse({'prediction': digit})
+            image = Image.open(io.BytesIO(image_bytes)).convert('L').resize((28, 28))
+
+            # np -> normalize -> flatten list
+            image_np = np.array(image, dtype=float) / 255.0
+            image_flat = image_np.reshape(-1).tolist()
+            res = predict(image_flat)
+            if res['status']:
+                digit = int(res['data'])
+                return JsonResponse({'prediction': digit})
+            else:
+                return JsonResponse({'error': res['message']})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
