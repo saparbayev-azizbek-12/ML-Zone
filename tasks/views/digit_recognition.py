@@ -25,7 +25,7 @@ def index(request):
             data = json.loads(request.body)
             image_data = data.get('image_data')
 
-            format, imgstr = image_data.split(';base64,')
+            _, imgstr = image_data.split(';base64,')
             image_bytes = base64.b64decode(imgstr)
             
             image = Image.open(io.BytesIO(image_bytes)).convert('L').resize((28, 28))

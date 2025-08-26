@@ -1,6 +1,6 @@
 import requests
 
-FAST_API_URL = "http://127.0.0.1:8000/"
+FAST_API_URL = "https://spam-api-fmfe.onrender.com/"
 
 def predict(text):
     payload = {"text": text}
