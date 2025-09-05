@@ -1,1 +1,1 @@
-from . import house_price, digit_recognition, spam_classifier, iris_classifier
+from . import house_price, digit_recognition, spam_classifier, iris_classifier, fashion_classifier, utils

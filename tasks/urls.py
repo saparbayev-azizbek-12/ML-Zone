@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import house_price, digit_recognition, spam_classifier, iris_classifier
+from .views import house_price, digit_recognition, spam_classifier, iris_classifier, fashion_classifier
 
 app_name = 'tasks'
 
@@ -8,4 +8,5 @@ urlpatterns = [
     path('digit-recognition/', digit_recognition.index, name='digit_recognition'),
     path('spam-classifier/', spam_classifier.index, name='spam_classifier'),
     path('iris-classifier/', iris_classifier.index, name='iris_classifier'),
+    path('fashion-classifier/', fashion_classifier.index, name='fashion_classifier'),
 ]
