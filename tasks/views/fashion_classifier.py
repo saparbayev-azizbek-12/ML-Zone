@@ -1,8 +1,7 @@
-from django.shortcuts import render
 from django.conf import settings
-import os
-from .utils import preprocess_image, file_name_generator, get_model, save_file
+from django.shortcuts import render
 from .constants import class_names
+from .utils import preprocess_image, file_name_generator, get_model, save_file
 
 def index(request):
     context = {}
@@ -22,21 +21,13 @@ def index(request):
                 if not img_file:
                     context['error'] = 'No image file provided.'
                 else:
-                    # Generate unique filename
                     file_name = file_name_generator(img_file)
-                    
-                    # Save file to media/fashion directory
                     save_file(img_file, file_name, 'fashion')
-                    
-                    # Reset file pointer for processing
                     img_file.seek(0)
-                    
-                    # Process image
                     X = preprocess_image(img_file)
                     X = scaler.transform(X)
                     pred = model.predict(X)[0]
 
-                    # Prepare context
                     context['prediction'] = class_names[pred]
                     context['filename'] = file_name
                     context['uploaded_image'] = f"{settings.MEDIA_URL}fashion/{file_name}"

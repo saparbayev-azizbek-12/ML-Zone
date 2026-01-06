@@ -9,6 +9,7 @@ from django.conf import settings
 from django.shortcuts import render
 from django.http import JsonResponse
 
+
 model_path = os.path.join(settings.BASE_DIR, 'models', 'digit_recognition', 'digit_clf.joblib')
 try:
     model = joblib.load(model_path)

@@ -18,8 +18,6 @@ def index(request):
     context = {}
     if request.method == 'POST':
         if model is None or vectorizer is None:
-            # This case should ideally be handled more gracefully
-            # For now, just re-render with an error message in context if needed
             context['error'] = 'Model not loaded. Please contact an administrator.'
             return render(request, 'spam_classifier/index.html', context)
 

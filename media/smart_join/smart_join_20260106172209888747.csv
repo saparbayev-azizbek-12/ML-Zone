@@ -1,0 +1,5 @@
+company_name__2233,projects,location,description_23,df1_index,df2_index,similarity,company,project_list,city,about
+Google Inc,"Search Engine, Ads Platform",Mountain View,"Technology company focused on search, advertising and cloud services",0,0,0.7757211,Google,"Google Search, Google Ads",California,"Global tech firm offering search engine, ads, and cloud computing"
+Yandex,"Search, Maps, Taxi",Moscow,Russian technology company providing search and AI services,2,2,0.78257304,Yandex LLC,"Taxi service, Maps, Search Engine",Russia,IT company working on AI-powered search and navigation services
+EPAM Systems,"Software Development, Consulting",New York,Global software engineering and IT consulting company,3,3,0.8108185,EPAM,"IT consulting, custom software",United States,International company delivering digital platform engineering
+UzAuto Motors,Car Manufacturing,"Asaka, Uzbekistan",Automobile manufacturer producing passenger vehicles,4,4,0.7524251,Uzavto,Passenger car production,Andijan region,Uzbek automotive company manufacturing vehicles

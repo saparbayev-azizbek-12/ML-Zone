@@ -6,7 +6,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render
 
-# Correct path to the model file
+
 model_path = os.path.join(settings.BASE_DIR, 'models', 'iris_classifier', 'iris_dataset_classifier.joblib')
 try:
     model = joblib.load(model_path)
